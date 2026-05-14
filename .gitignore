@@ -1,0 +1,24 @@
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+static/
+.env
+
+# Firebase
+service-account.json
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Stitch Assets
+stitch_*.html
+inbox_assets.zip
