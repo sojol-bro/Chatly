@@ -218,3 +218,75 @@ def get_message_history(
             for msg in messages
         ],
     )
+
+
+# ─── User Discovery & Chat Initialization ─────────────────────────────────────
+
+class UserSearchSchema(Schema):
+    id: int
+    username: str
+
+
+class StartChatSchema(Schema):
+    username: str
+
+
+@api.get("/users/search/", response=List[UserSearchSchema], tags=["Users"])
+def search_users(request, q: str):
+    """
+    Search for users by username to start a new chat.
+    Excludes the current user from results.
+    """
+    if not q or len(q) < 2:
+        return []
+
+    users = User.objects.filter(username__icontains=q).exclude(id=request.user.id)[:10]
+    return [UserSearchSchema(id=u.id, username=u.username) for u in users]
+
+
+@api.post("/conversations/start/", response={200: ConversationSchema, 404: ErrorSchema}, tags=["Conversations"])
+def start_conversation(request, payload: StartChatSchema):
+    """
+    Starts a 1-on-1 conversation with another user by their username.
+    If a 1-on-1 conversation already exists between the two users, it returns the existing one.
+    """
+    try:
+        other_user = User.objects.get(username=payload.username)
+    except User.DoesNotExist:
+        return 404, {"detail": f"User '{payload.username}' not found."}
+
+    # Find existing 1-on-1 conversation
+    existing_conv = (
+        Conversation.objects.filter(participants=request.user)
+        .filter(participants=other_user)
+        .filter(is_group=False)
+        .first()
+    )
+
+    if existing_conv:
+        return 200, ConversationSchema(
+            id=existing_conv.id,
+            participants=[
+                ParticipantSchema(id=p.id, username=p.username)
+                for p in existing_conv.participants.all()
+            ],
+            is_group=existing_conv.is_group,
+            created_at=existing_conv.created_at,
+            last_message=existing_conv.messages.order_by("-timestamp").first().text if existing_conv.messages.exists() else None
+        )
+
+    # Create new conversation
+    new_conv = Conversation.objects.create(is_group=False)
+    new_conv.participants.add(request.user, other_user)
+
+    return 200, ConversationSchema(
+        id=new_conv.id,
+        participants=[
+            ParticipantSchema(id=p.id, username=p.username)
+            for p in new_conv.participants.all()
+        ],
+        is_group=False,
+        created_at=new_conv.created_at,
+        last_message=None
+    )
+

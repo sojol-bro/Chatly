@@ -1,6 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-stitch: #9B8EC7;
+  --color-stitch-light: #B5ACD6;
+  --color-stitch-dark: #7D6EB0;
+  
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
 
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
