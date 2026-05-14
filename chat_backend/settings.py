@@ -17,11 +17,12 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 # ─── Core Settings ────────────────────────────────────────────────────────────
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
-CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
-JWT_SECRET_KEY = env("JWT_SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-build-dummy-key")
+DEBUG = env("DEBUG", default=False)
+ALLOWED_HOSTS = env("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", default=[])
+JWT_SECRET_KEY = env("JWT_SECRET_KEY", default="jwt-build-dummy-key")
+
 
 # ─── Installed Apps ──────────────────────────────────────────────────────────
 INSTALLED_APPS = [
