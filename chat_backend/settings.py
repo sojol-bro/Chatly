@@ -106,14 +106,13 @@ if _redis_available(REDIS_URL):
             "CONFIG": {"hosts": [REDIS_URL]},
         }
     }
-    print(f"[channels] Using Redis channel layer: {REDIS_URL}")
 else:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         }
     }
-    print("[channels] Redis not available — using InMemoryChannelLayer (dev only)")
+
 
 # ─── Authentication ───────────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
