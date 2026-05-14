@@ -13,7 +13,8 @@ const useChat = (conversationId) => {
       socketRef.current.close();
     }
     
-    const wsUrl = `ws://localhost:8000/ws/chat/${conversationId}/?token=${token}`;
+    const wsBase = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
+    const wsUrl = `${wsBase}/ws/chat/${conversationId}/?token=${token}`;
     const ws = new WebSocket(wsUrl);
     
     ws.onopen = () => {
